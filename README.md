@@ -20,13 +20,20 @@ Spacebar to enter timestamp.<br>
 Comma (,) to rewind 5 seconds.<br>
 Full stop (.) to replay last timed line.<br>
 Backspace to clear timestamp.<br>
+Double click on a lyric line to edit it.<br>
+Press esc, enter, or click off, to finish editing.<br>
 <br>
 <br>
 ## Other
-Also features drag seek for the song, play position, and duration.
+Features -
+- drag seek for the song
+- duration
+- live lyric editing
+- play position
+- song replay
+- toggle to include/exclude empty timestamp at the end
 <br>
 <br>
 <br>
 My first real heavy project, so I hope everything works cool and good :) I might be fiddling with it to the end of time but I'm unleashing it upon the world as it is anyway.<br>
-![GitHub Downloads (specific asset, all releases)](https://img.shields.io/github/downloads/Yeosangist/lrc-maker/lrcmaker?displayAssetName=true&style=flat&color=%2300aa00)
-
+![GitHub Downloads (specific asset, all releases)](https://img.shields.io/github/downloads/Yeosangist/lrc-maker/lrcmaker?displayAssetName=true&style=flat&color=009900)
