@@ -20,6 +20,7 @@ class LyricWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("LRC Maker")
         self.resize(600, 800)
+        self.add_end_timestamp = True
 
         # ----- Layout -----
         central = QWidget()
@@ -32,6 +33,7 @@ class LyricWindow(QMainWindow):
         self.table.setColumnCount(2)
         self.table.setHorizontalHeaderLabels(["Time", "Lyric"])
         self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.table.cellDoubleClicked.connect(self.enter_edit_mode)
         self.table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.table.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         self.table.cellClicked.connect(self.set_current_row)
@@ -61,6 +63,11 @@ class LyricWindow(QMainWindow):
         self.seek_slider = QSlider(Qt.Orientation.Horizontal)
         self.seek_slider.sliderMoved.connect(self.seek_position)
         self.layout.addWidget(self.seek_slider)
+        
+        self.toggle_end_button = QPushButton("Toggle Final Timestamp: ON")
+        self.toggle_end_button.clicked.connect(self.toggle_end_timestamp)
+        self.layout.addWidget(self.toggle_end_button)
+
 
         # ----- Slider -----
         self.user_seeking = False
@@ -131,6 +138,12 @@ class LyricWindow(QMainWindow):
         self.player = vlc.MediaPlayer(audio_file)
         self.player.video_set_key_input(False)
         self.player.video_set_mouse_input(False)
+        
+        events = self.player.event_manager()
+        events.event_attach(
+            vlc.EventType.MediaPlayerEndReached,
+            lambda event: QTimer.singleShot(0, self.song_finished)
+        )
 
         self.player.play()
         self.player.pause()
@@ -172,6 +185,11 @@ class LyricWindow(QMainWindow):
             self.table.setColumnWidth(0, 100)
             self.table.resizeRowsToContents()
 
+    # ---------- Editing ----------
+    
+    def enter_edit_mode(self, row, column):
+        if column == 1:
+            self.table.editItem(self.table.item(row, column))
 
     # ---------- Timing ----------
 
@@ -202,7 +220,33 @@ class LyricWindow(QMainWindow):
     def seek_position(self, position):
         if self.player:
             self.player.set_time(position)
+            
+    def toggle_end_timestamp(self):
+        self.add_end_timestamp = not self.add_end_timestamp
+        state = "ON" if self.add_end_timestamp else "OFF"
+        self.toggle_end_button.setText(f"Toggle Final Timestamp: {state}")
+        
+    def add_final_timestamp(self):
+        length = self.player.get_length()
+        if length <= 0:
+            return
 
+        minutes = length // 60000
+        seconds = (length % 60000) // 1000
+        hundredths = (length % 1000) // 10
+        timestamp = f"{minutes:02}:{seconds:02}.{hundredths:02}"
+        
+        last_row = self.table.rowCount() - 1
+        if last_row >= 0:
+            existing = self.table.item(last_row, 0).text()
+            if existing == timestamp:
+                return
+
+        row = self.table.rowCount()
+        self.table.insertRow(row)
+        self.table.setItem(row, 0, QTableWidgetItem(timestamp))
+        self.table.setItem(row, 1, QTableWidgetItem(""))
+        
     # ---------- Row Control ----------
 
     def set_current_row(self, row, column):
@@ -254,6 +298,16 @@ class LyricWindow(QMainWindow):
         s, h = s.split(".")
         ms = (int(m) * 60 + int(s)) * 1000 + int(h) * 10
         self.player.set_time(ms)
+        
+    def song_finished(self):
+        if not self.player:
+            return
+
+        if self.add_end_timestamp:
+            self.add_final_timestamp()
+
+        self.player.stop()
+        self.player.set_time(0)
 
     # ---------- Export ----------
 
