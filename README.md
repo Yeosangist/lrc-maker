@@ -1,5 +1,7 @@
 # lrc-maker
-Offline .lrc maker from .txt files
+Offline .lrc maker from .txt files<br>
+<br>
+![GitHub Downloads (specific asset, all releases)](https://img.shields.io/github/downloads/Yeosangist/lrc-maker/lrcmaker?color=009900)
 
 Inspired by [Megalobiz lrc maker](https://www.megalobiz.com/lrc/maker).<br>
 Best used in conjunction with [lrcget](https://github.com/tranxuanthang/lrcget).<br>
@@ -36,4 +38,3 @@ Features -
 <br>
 <br>
 My first real heavy project, so I hope everything works cool and good :) I might be fiddling with it to the end of time but I'm unleashing it upon the world as it is anyway.<br>
-![GitHub Downloads (specific asset, all releases)](https://img.shields.io/github/downloads/Yeosangist/lrc-maker/lrcmaker?displayAssetName=true&style=flat&color=009900)
